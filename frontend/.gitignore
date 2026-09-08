@@ -22,3 +22,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# DevPilot runtime uploads
+backend/uploaded_projects/
