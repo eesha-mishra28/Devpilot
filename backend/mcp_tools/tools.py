@@ -1,7 +1,13 @@
 from pathlib import Path
+import os
 
 
-PROJECT_ROOT = Path(r"D:\DevPilot")
+PROJECT_ROOT = Path(
+    os.getenv(
+        "DEVPILOT_PROJECT_PATH",
+        r"D:\DevPilot",
+    )
+)
 
 
 SUPPORTED_EXTENSIONS = {
@@ -27,11 +33,25 @@ IGNORED_DIRECTORIES = {
 }
 
 
+IGNORED_FILES = {
+    "package-lock.json",
+    "yarn.lock",
+    "pnpm-lock.yaml",
+}
+
+
 def is_allowed_file(file_path: Path):
+
     if not file_path.is_file():
         return False
 
-    if any(part in IGNORED_DIRECTORIES for part in file_path.parts):
+    if any(
+        part in IGNORED_DIRECTORIES
+        for part in file_path.parts
+    ):
+        return False
+
+    if file_path.name in IGNORED_FILES:
         return False
 
     if file_path.suffix.lower() not in SUPPORTED_EXTENSIONS:
@@ -41,13 +61,17 @@ def is_allowed_file(file_path: Path):
 
 
 def list_files():
+
     files = []
 
     for file_path in PROJECT_ROOT.rglob("*"):
+
         if not is_allowed_file(file_path):
             continue
 
-        relative_path = file_path.relative_to(PROJECT_ROOT)
+        relative_path = file_path.relative_to(
+            PROJECT_ROOT
+        )
 
         files.append(str(relative_path))
 
@@ -55,20 +79,26 @@ def list_files():
 
 
 def search_repository(query: str):
+
     results = []
 
     for file_path in PROJECT_ROOT.rglob("*"):
+
         if not is_allowed_file(file_path):
             continue
 
         try:
+
             content = file_path.read_text(
                 encoding="utf-8",
                 errors="ignore",
             )
 
             if query.lower() in content.lower():
-                relative_path = file_path.relative_to(PROJECT_ROOT)
+
+                relative_path = file_path.relative_to(
+                    PROJECT_ROOT
+                )
 
                 results.append({
                     "file": str(relative_path),
@@ -76,20 +106,29 @@ def search_repository(query: str):
                 })
 
         except Exception as e:
-            print(f"Could not read {file_path}: {e}")
+
+            print(
+                f"Could not read {file_path}: {e}"
+            )
 
     return results
 
 
 def read_file(file_path: str):
+
     target = PROJECT_ROOT / file_path
 
     if not is_allowed_file(target):
+
         return {
-            "error": "File does not exist or is not an allowed source file."
+            "error": (
+                "File does not exist or is not "
+                "an allowed source file."
+            )
         }
 
     try:
+
         content = target.read_text(
             encoding="utf-8",
             errors="ignore",
@@ -101,6 +140,7 @@ def read_file(file_path: str):
         }
 
     except Exception as e:
+
         return {
             "error": f"Could not read file: {e}"
         }

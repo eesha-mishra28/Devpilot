@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+python-dotenv
+google-genai
+faiss-cpu
+numpy
+sentence-transformers
+mcp==1.29.1
+python-multipart
