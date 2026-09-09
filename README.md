@@ -1,214 +1,141 @@
-# DevPilot - AI Developer Knowledge Agent
+# 🚀 DevPilot — AI Developer Knowledge Agent
 
-DevPilot is an AI-powered developer knowledge agent that helps developers understand, navigate, and explore complex codebases using natural-language questions.
+> Understand any codebase faster with AI-powered code search, RAG, and repository-aware intelligence.
 
-Instead of manually searching through multiple files, developers can ask questions such as:
+DevPilot is an AI-powered developer knowledge agent that allows developers to upload a project and ask natural-language questions about its implementation.
 
-> **"Where is authentication implemented?"**
-> **"Which files handle JWT validation?"**
-> **"Explain how this API works."**
-> **"What happens when a user creates a task?"**
+Instead of manually searching through hundreds of files, developers can ask questions such as:
 
-DevPilot combines **Retrieval-Augmented Generation (RAG), semantic search, Gemini, FAISS, and Model Context Protocol (MCP)** to retrieve relevant code and generate contextual answers with file and line references.
+- Where is authentication implemented?
+- Which files handle JWT validation?
+- How does this API work?
+- What happens when a user creates a task?
+- How do these files work together?
 
----
-
-## 🚀 Key Features
-
-* 🤖 **AI-powered codebase Q&A**
-
-  * Ask questions about a project using natural language.
-
-* 🔍 **Retrieval-Augmented Generation**
-
-  * Retrieves relevant code snippets before generating an answer.
-
-* 🧠 **Semantic code search**
-
-  * Uses embeddings to find conceptually relevant code rather than relying only on exact keyword matches.
-
-* 📁 **Codebase intelligence**
-
-  * Reads and analyzes supported source files across a repository.
-
-* 🔌 **MCP integration**
-
-  * Provides repository tools that the AI can use when additional information is required.
-
-* 📍 **Source references**
-
-  * Responses can include:
-
-    * File path
-    * Programming language
-    * Approximate line numbers
-
-* ⚡ **Fast vector search**
-
-  * FAISS enables efficient similarity search across indexed code chunks.
-
-* 🛡️ **Hallucination-aware responses**
-
-  * The agent is instructed to avoid inventing information when the required information cannot be found.
-
-* 💻 **Developer-focused interface**
-
-  * Clean React-based chat interface designed for code exploration.
+DevPilot retrieves relevant code using **Retrieval-Augmented Generation (RAG)** and **FAISS**, generates grounded answers using **Google Gemini**, and can inspect the repository using **Model Context Protocol (MCP)** tools when additional information is required.
 
 ---
 
-# 🏗️ Architecture
+## 🌐 Live Demo
 
-```text
-                         ┌─────────────────────┐
-                         │       User          │
-                         └──────────┬──────────┘
-                                    │
-                                    ▼
-                         ┌─────────────────────┐
-                         │    React Frontend   │
-                         │      Vite + CSS      │
-                         └──────────┬──────────┘
-                                    │
-                                    ▼
-                         ┌─────────────────────┐
-                         │    FastAPI Backend  │
-                         └──────────┬──────────┘
-                                    │
-                    ┌───────────────┴───────────────┐
-                    │                               │
-                    ▼                               ▼
-             ┌─────────────┐                 ┌─────────────┐
-             │     RAG     │                 │     MCP     │
-             │   Pipeline  │                 │ Tool Layer  │
-             └──────┬──────┘                 └──────┬──────┘
-                    │                               │
-             ┌──────┴──────┐                ┌──────┴──────┐
-             │ Embeddings  │                │ Repository  │
-             │             │                │   Tools     │
-             └──────┬──────┘                └─────────────┘
-                    │
-             ┌──────▼──────┐
-             │    FAISS    │
-             │ Vector Store│
-             └──────┬──────┘
-                    │
-                    ▼
-             ┌─────────────┐
-             │   Gemini    │
-             │     LLM     │
-             └──────┬──────┘
-                    │
-                    ▼
-             ┌─────────────────────┐
-             │ AI Answer + Sources │
-             └─────────────────────┘
-```
+**Frontend:**  
+https://devpilot-fawn.vercel.app/
+
+**Backend API:**  
+https://devpilot-v9s8.onrender.com
 
 ---
 
-# 🔄 How DevPilot Works
+## 📸 Screenshots
 
-When a developer asks a question, DevPilot follows this general workflow:
+### DevPilot Home
 
-### 1. User asks a question
+![DevPilot Home](docs/01-home.png)
+
+### Uploaded Codebase
+
+![Uploaded Codebase](docs/02-uploaded-codebase.png)
+
+### AI Codebase Analysis
+
+![AI Codebase Analysis](docs/03-ai-answer.png)
+
+---
+
+## ✨ Features
+
+- 📦 Upload a project as a ZIP file
+- 🤖 AI-powered codebase question answering
+- 🔎 Semantic code search using RAG
+- 🧠 Gemini-powered embeddings and responses
+- ⚡ FAISS vector similarity search
+- 🛠️ MCP repository tools
+- 📁 Repository-aware answers
+- 📍 File and line-number references
+- 🔗 Multi-file implementation tracing
+- 🖥️ Professional developer-focused interface
+- ☁️ Deployed frontend and backend
+
+---
+
+## 🧠 Example
+
+A developer can upload a project and ask:
+
+> **Where is JWT validation implemented?**
+
+DevPilot analyzes the uploaded repository and identifies the relevant implementation.
 
 For example:
 
 ```text
-Where is authentication implemented?
-```
-
-### 2. Query embedding
-
-The question is converted into a numerical vector using:
-
-```text
-all-MiniLM-L6-v2
-```
-
-### 3. Semantic retrieval
-
-The query vector is compared against vectors representing chunks of the indexed codebase.
-
-FAISS retrieves the most relevant chunks.
-
-### 4. Context construction
-
-DevPilot collects information such as:
-
-```text
-File: backend/main.py
-Language: Python
-Lines: 91-137
-
-<relevant code>
-```
-
-### 5. Gemini reasoning
-
-The retrieved context is provided to Gemini along with the user's question.
-
-Gemini generates a developer-friendly explanation based on the available code.
-
-### 6. MCP tool usage
-
-If the retrieved context isn't sufficient, Gemini can request repository tools through MCP.
-
-Available tools include:
-
-```text
-list_repository_files
-search_codebase
-read_repository_file
-```
-
-### 7. Final response
-
-DevPilot returns an answer along with relevant source information.
-
-Example:
-
-```text
-Authentication is implemented in backend/auth.py.
-
-The JWT validation logic is handled by the
-verify_token() function around lines 42–58.
-```
-
----
-
-# 🧠 RAG Pipeline
-
-DevPilot's RAG pipeline consists of several stages:
-
-```text
-Codebase
+auth.py
    ↓
-File Loader
+verify_token()
    ↓
-Document Chunks
+api.py
    ↓
-Embeddings
+get_profile()
    ↓
-FAISS Vector Store
+app.py
    ↓
-Similarity Search
-   ↓
-Relevant Context
-   ↓
-Gemini
-   ↓
-Answer
-```
+handle_request()
 
-### File Loading
+🏗️ Architecture
+                    ┌──────────────────────┐
+                    │      Developer       │
+                    │                      │
+                    │ Upload ZIP + Ask     │
+                    │ Questions            │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │   React + Vite UI    │
+                    │       Vercel         │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+                    ┌──────────────────────┐
+                    │    FastAPI Backend   │
+                    │       Render         │
+                    └──────────┬───────────┘
+                               │
+                ┌──────────────┼──────────────┐
+                │              │              │
+                ▼              ▼              ▼
+        ┌─────────────┐ ┌─────────────┐ ┌─────────────┐
+        │ Codebase    │ │     RAG     │ │     MCP     │
+        │ Ingestion   │ │             │ │ Repository  │
+        │             │ │ Gemini      │ │ Tools       │
+        │ Loader      │ │ Embeddings  │ │             │
+        │ Chunker     │ │ + FAISS     │ │ Search      │
+        └─────────────┘ └─────────────┘ │ Read Files  │
+                                        │ List Files  │
+                                        └──────┬──────┘
+                                               │
+                                               ▼
+                                    ┌──────────────────┐
+                                    │  Google Gemini   │
+                                    │                  │
+                                    │ Context-aware AI │
+                                    │ Response         │
+                                    └────────┬─────────┘
+                                             │
+                                             ▼
+                                    ┌──────────────────┐
+                                    │ Answer + Sources │
+                                    │ File + Lines     │
+                                    └──────────────────┘
+🔍 How DevPilot Works
+1. Upload
 
-DevPilot scans the repository and processes supported source files.
+The developer uploads a project as a ZIP file.
 
-Supported extensions include:
+DevPilot extracts the project and identifies supported source files.
 
-```text
+Supported file types include:
+
 .py
 .js
 .jsx
@@ -218,104 +145,114 @@ Supported extensions include:
 .md
 .css
 .html
-```
 
-Common directories such as `node_modules`, `.git`, `dist`, `build`, and virtual environments are ignored.
+Common generated directories and lock files are ignored.
 
-### Chunking
+2. Codebase Ingestion
 
-Large files are divided into smaller overlapping chunks.
+DevPilot scans the uploaded repository and extracts metadata such as:
 
-Current configuration:
+File path
+Filename
+Language
+File extension
+Source code
 
-```text
-Chunk size: 1200 characters
-Overlap:    200 characters
-```
+The source code is then divided into manageable chunks.
 
-Chunk metadata is preserved during processing.
+Each chunk stores:
 
-### Embeddings
+File path
+Programming language
+Start line
+End line
+Code content
+3. Embeddings
 
-Each chunk is converted into a vector representation using:
+The code chunks are converted into vector embeddings using Gemini Embeddings.
 
-```text
-Sentence Transformers
-all-MiniLM-L6-v2
-```
+These embeddings represent the semantic meaning of the code and allow DevPilot to find code that is conceptually relevant to a developer's question.
 
-This allows DevPilot to perform semantic similarity search.
+4. Vector Search
 
-### Vector Search
+DevPilot uses FAISS for similarity search.
 
-FAISS stores the generated vectors and retrieves the most relevant chunks for a user's question.
+When a user asks a question:
 
----
+User Question
+      ↓
+Question Embedding
+      ↓
+FAISS Similarity Search
+      ↓
+Most Relevant Code Chunks
 
-# 🔌 MCP Integration
+The most relevant code chunks are retrieved and provided to the AI model as context.
 
-DevPilot uses **Model Context Protocol (MCP)** as its repository tool layer.
+5. AI Reasoning
 
-The MCP server exposes three tools:
+The retrieved code context is passed to Google Gemini.
 
-### `list_repository_files`
+DevPilot instructs the model to:
 
-Lists supported source files in the repository.
+Use the uploaded repository as the source of truth
+Avoid inventing implementation details
+Mention relevant files
+Include line numbers when available
+Explain relationships between files
+Clearly distinguish facts from inference
+Give practical and direct answers
+6. MCP Repository Tools
 
-### `search_codebase`
+When the retrieved RAG context is insufficient, DevPilot can use repository tools through the Model Context Protocol (MCP).
 
-Searches repository files for a specific text query.
+Current repository tools include:
 
-### `read_repository_file`
+list_repository_files
+search_codebase
+read_repository_file
 
-Reads the contents of a specific repository file.
+These tools allow DevPilot to inspect repository files and search the codebase when additional evidence is required.
 
-This creates a separation between:
+7. Source References
 
-```text
+DevPilot returns source information along with the answer.
+
+Example:
+
+auth.py
+Python
+Lines 7–10
+
+api.py
+Python
+Lines 1–5
+
+This allows developers to verify AI-generated explanations against the actual source code.
+
+🛠️ Tech Stack
+Frontend
+React
+Vite
+JavaScript
+CSS
+Backend
+Python
+FastAPI
+Uvicorn
+AI
+Google Gemini
+Gemini Embeddings
 RAG
-→ Finds semantically relevant knowledge
-
-MCP
-→ Gives the AI direct access to repository tools
-```
-
-Together, they allow DevPilot to combine semantic retrieval with direct repository interaction.
-
----
-
-# 🛠️ Tech Stack
-
-| Technology                | Purpose                                |
-| ------------------------- | -------------------------------------- |
-| **React**                 | Frontend user interface                |
-| **Vite**                  | Frontend development and build tooling |
-| **CSS**                   | UI styling                             |
-| **FastAPI**               | Python backend/API                     |
-| **Gemini**                | Large Language Model                   |
-| **Google GenAI SDK**      | Gemini API integration                 |
-| **Sentence Transformers** | Local text/code embeddings             |
-| **FAISS**                 | Vector similarity search               |
-| **MCP**                   | AI tool/repository integration         |
-| **Python**                | Backend and AI pipeline                |
-| **Git/GitHub**            | Version control                        |
-
----
-
-# 📂 Project Structure
-
-```text
+FAISS
+Vector similarity search
+Repository Intelligence
+Model Context Protocol (MCP)
+Deployment
+Vercel — Frontend
+Render — Backend
+📁 Project Structure
 DevPilot/
-│
-├── frontend/
-│   ├── src/
-│   │   ├── assets/
-│   │   ├── App.jsx
-│   │   ├── App.css
-│   │   └── main.jsx
-│   │
-│   ├── package.json
-│   └── vite.config.js
 │
 ├── backend/
 │   │
@@ -332,339 +269,201 @@ DevPilot/
 │   │
 │   ├── mcp_client.py
 │   ├── main.py
-│   ├── .env
 │   └── requirements.txt
+│
+├── frontend/
+│   │
+│   ├── src/
+│   │   ├── App.jsx
+│   │   └── App.css
+│   │
+│   ├── package.json
+│   └── vite.config.js
+│
+├── docs/
+│   ├── 01-home.png
+│   ├── 02-uploaded-codebase.png
+│   └── 03-ai-answer.png
 │
 ├── .gitignore
 └── README.md
-```
-
----
-
-# ⚙️ Getting Started
-
-## Prerequisites
-
-Make sure you have:
-
-* Python 3.10+
-* Node.js
-* npm
-* Git
-* A Gemini API key
-
----
-
-## 1. Clone the Repository
-
-```bash
-git clone https://github.com/<your-username>/DevPilot.git
-cd DevPilot
-```
-
----
-
-# 2. Backend Setup
-
-Navigate to the backend:
-
-```bash
-cd backend
-```
-
-Create a virtual environment:
-
-```bash
-python -m venv venv
-```
-
-Activate it on Windows:
-
-```powershell
-.\venv\Scripts\Activate.ps1
-```
-
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
-# 3. Configure Environment Variables
-
-Create:
-
-```text
-backend/.env
-```
-
-Add:
-
-```env
-GEMINI_API_KEY=your_gemini_api_key
-```
-
-> Never commit `.env` or expose your API key publicly.
-
----
-
-# 4. Start the Backend
-
-From the `backend` directory:
-
-```bash
-uvicorn main:app --reload
-```
-
-The API will be available at:
-
-```text
-http://localhost:8000
-```
-
-Health check:
-
-```text
+🔌 API Endpoints
+Health Check
 GET /api/health
-```
 
----
+Returns backend health and whether a project is currently loaded.
 
-# 5. Start the Frontend
+Upload Project
+POST /api/upload
 
-Open another terminal:
+Uploads and processes a ZIP codebase.
 
-```bash
-cd frontend
-```
+Example response:
 
-Install dependencies:
-
-```bash
-npm install
-```
-
-Start the development server:
-
-```bash
-npm run dev
-```
-
-Vite will provide the local frontend URL, typically:
-
-```text
-http://localhost:5173
-```
-
----
-
-# 🔐 Environment & Security
-
-DevPilot uses environment variables for sensitive configuration.
-
-Example:
-
-```env
-GEMINI_API_KEY=your_api_key
-```
-
-The following should **never** be committed:
-
-```text
-.env
-venv/
-__pycache__/
-```
-
-A `.gitignore` file is included to help prevent accidental commits.
-
----
-
-# 📡 API
-
-## Health Check
-
-### Request
-
-```http
-GET /api/health
-```
-
-### Response
-
-```json
 {
-  "status": "ok"
+  "success": true,
+  "filename": "project.zip",
+  "files": 20,
+  "chunks": 45,
+  "message": "Project uploaded successfully."
 }
-```
-
----
-
-## Chat
-
-### Request
-
-```http
+Ask DevPilot
 POST /api/chat
-```
 
-Example:
+Example request:
 
-```json
 {
-  "message": "Where is authentication implemented?"
+  "message": "Where is JWT validation implemented?"
 }
-```
 
-### Response
+Example response:
 
-```json
 {
-  "answer": "Authentication is implemented in ...",
+  "answer": "JWT validation is implemented in auth.py...",
   "sources": [
     {
-      "file": "backend/main.py",
+      "path": "auth.py",
       "language": "Python",
-      "start_line": 91,
-      "end_line": 137
+      "start_line": 7,
+      "end_line": 10
     }
   ]
 }
-```
+🚀 Running Locally
+Backend
 
----
+Navigate to the backend:
 
-# 🎯 Example Questions
+cd backend
 
-DevPilot can be used for questions such as:
+Create a virtual environment:
 
-```text
-Where is authentication implemented?
+python -m venv venv
 
-Which files handle JWT validation?
+Activate it:
 
-Explain how the chat API works.
+venv\Scripts\activate
 
-Where is the Gemini API called?
+Install dependencies:
 
-What happens when a user creates a task?
+pip install -r requirements.txt
 
-Which files contain the database logic?
+Create:
 
-What programming language is this module written in?
-```
+backend/.env
 
----
+Add:
 
-# 💡 Why DevPilot?
+GEMINI_API_KEY=your_gemini_api_key
 
-Modern software projects can contain hundreds or thousands of files. Understanding an unfamiliar repository often requires manually searching through files, following imports, and understanding relationships between different components.
+Start the backend:
 
-DevPilot aims to reduce this friction by allowing developers to interact with their codebase using natural language.
+uvicorn main:app --reload
 
-Instead of:
+Backend:
 
-```text
-Search → Open file → Read code → Follow references → Understand
-```
+http://localhost:8000
+Frontend
 
-developers can use:
+Open another terminal:
 
-```text
-Ask → Retrieve → Analyze → Explain
-```
+cd frontend
 
----
+Install dependencies:
 
-# 🧩 Design Principles
+npm install
 
-### Grounded answers
+Start the development server:
 
-DevPilot uses retrieved repository information as the basis for responses rather than relying solely on the LLM's general knowledge.
+npm run dev
 
-### Source awareness
+Frontend:
 
-Relevant files and line ranges are preserved throughout the RAG pipeline.
+http://localhost:5173
 
-### Tool-assisted reasoning
+The frontend API URL is configured using:
 
-MCP allows the AI to access repository operations when semantic retrieval alone isn't enough.
+VITE_API_URL=http://localhost:8000/api
+🔐 Security
 
-### Developer-friendly output
+DevPilot is designed so that uploaded projects are processed by the backend during the active application session.
 
-Responses are designed to explain implementation details in a way that is useful for developers navigating unfamiliar code.
+Runtime uploads and environment files are excluded from Git using .gitignore.
 
----
+Sensitive credentials such as:
 
-# 🚧 Current Limitations
+GEMINI_API_KEY
 
-DevPilot is currently an MVP/prototype.
+should never be committed to GitHub.
 
-Current limitations include:
+⚠️ Current Limitations
+Large repositories can take longer to index.
+The first question after uploading a project can take longer because embeddings need to be generated.
+The backend currently maintains the active uploaded project in memory.
+Render's free instance can experience cold-start delays after inactivity.
+AI-generated explanations should still be verified against the source code.
+🔮 Future Improvements
+Persistent vector databases
+Incremental repository indexing
+GitHub repository integration
+Multiple simultaneous projects
+Conversation history
+User authentication
+Streaming AI responses
+Improved code-aware chunking
+AST-based code analysis
+Dependency graph visualization
+Background indexing for large repositories
+More advanced MCP agent workflows
+📚 What I Learned
 
-* Repository indexing is performed when the backend starts.
-* The current MCP integration handles a single tool call in the agent flow.
-* MCP tool schemas are currently simplified rather than dynamically generated from each tool's exact schema.
-* RAG retrieval can occasionally return additional context that is not directly relevant.
-* The current implementation is primarily designed for source-code exploration rather than full software-engineering automation.
+Building DevPilot provided practical experience with:
 
----
+Full-stack application development
+React + Vite
+FastAPI
+REST APIs
+Gemini APIs
+Embeddings
+Retrieval-Augmented Generation (RAG)
+FAISS vector search
+Semantic search
+Model Context Protocol (MCP)
+Repository/codebase analysis
+Frontend-backend integration
+CORS configuration
+Cloud deployment
+Vercel
+Render
+Git and GitHub
+📊 Project Status
 
-# 🔮 Future Improvements
+Completed and Deployed 🚀
 
-Potential improvements include:
+Component	Status
+React Frontend	✅ Live
+FastAPI Backend	✅ Live
+ZIP Upload	✅ Working
+RAG Search	✅ Working
+Gemini AI	✅ Working
+FAISS Vector Search	✅ Working
+MCP Repository Tools	✅ Integrated
+Source References	✅ Working
+Vercel Deployment	✅ Live
+Render Deployment	✅ Live
+🌐 Links
 
-* [ ] Upload repositories directly through the UI
-* [ ] Incremental codebase indexing
-* [ ] Persistent vector database
-* [ ] Improved code-aware chunking
-* [ ] Multi-step MCP agent workflows
-* [ ] Dynamic MCP tool schemas
-* [ ] Conversation history
-* [ ] Repository selection
-* [ ] GitHub repository integration
-* [ ] Authentication and user accounts
-* [ ] Streaming AI responses
-* [ ] Improved source ranking
-* [ ] Deployment-ready architecture
+Live Application:
+https://devpilot-fawn.vercel.app/
 
----
+Backend API:
+https://devpilot-v9s8.onrender.com
 
-# 📈 Learning Outcomes
+GitHub Repository:
+https://github.com/eesha-mishra28/Devpilot
 
-This project demonstrates practical experience with:
+👩‍💻 Author
 
-* Full-stack application architecture
-* React and modern frontend development
-* REST API development
-* FastAPI
-* LLM integration
-* Prompt engineering
-* Retrieval-Augmented Generation
-* Text embeddings
-* Vector similarity search
-* FAISS
-* Sentence Transformers
-* MCP
-* AI agent/tool integration
-* Codebase analysis
-* Environment and dependency management
-* Git and GitHub
+Eesha Mishra
 
----
-
-# 👩‍💻 Author
-
-**Eesha Mishra**
-
-Aspiring Software Developer focused on building practical applications involving **full-stack development, AI, RAG, and developer tooling**.
-
----
-
-# ⭐ Project Summary
-
-**DevPilot** brings together **AI + RAG + semantic search + MCP** to create a developer-focused knowledge agent capable of understanding and navigating source code through natural-language interaction.
-
-> **Ask your codebase. Understand your codebase. Build faster.**
+Software Developer
